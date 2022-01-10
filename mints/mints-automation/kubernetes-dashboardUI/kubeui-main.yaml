@@ -1,0 +1,18 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Deploy the kubernetes-dashboard
+      command: kubectl create -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.3/aio/deploy/recommended.yaml
+    - name: Creating a serviceaccount
+      command: kubectl create -f serviceaccount.yaml
+    - name: Creating a clusterrole binding
+      command: kubectl create -f clusterrole.yaml
+    - name: Deleting Service for kubernetes dashboard
+      command: kubectl delete svc kubernetes-dashboard -n kubernetes-dashboard
+    - name: Exposing Service for kubernetes dashboard
+      command: kubectl expose deployment/kubernetes-dashboard --type="LoadBalancer" -n kubernetes-dashboard
+   #- name: kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}') --> to print token for accessing dashboard 
+      register: main
+    - debug:
+        var: main

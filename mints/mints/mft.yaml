@@ -1,0 +1,57 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mftapp
+spec:
+  selector:
+    app: mftapp
+  ports:
+  - protocol: TCP
+   #Port accessible inside cluster
+    port: 3000
+   # Port to forward to inside the pod
+    targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mftapp
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 1
+  replicas: 1
+  minReadySeconds: 15
+  template:
+    metadata:
+      labels:
+        app: mftapp
+    spec:
+      selector:
+        matchLabels:
+          app: mftapp
+      containers:
+      - name: mftapp 
+        image: dhaneshande/mftexplorer:latest
+        imagePullPolicy: Always
+      resources:
+        requests:
+          memory: "400Mi"
+          cpu: "500m"
+        limits:
+          memory: "800Mi"
+          cpu: "1000m"
+      ports:
+      - containerPort: 3000
+        protocol: TCP
+      #readiness probe for ztd
+      readinessProbe:
+        httpGet:
+          path: /
+          port: 3000
+        initialDelaySeconds: 5
+        periodSeconds: 5
+        successThreshold: 1 

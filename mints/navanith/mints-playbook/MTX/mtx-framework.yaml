@@ -1,0 +1,51 @@
+﻿apiVersion: v1
+kind: Service
+metadata:
+  name: mtxframework
+  namespace: default
+spec:
+  selector:
+    app: mtxframework
+  ports:
+    - protocol: TCP
+      #Port accessible inside cluster
+      port: 8080
+      # Port to forward to inside the pod
+      targetPort: 8080
+      #Port accessible outside cluster
+      #reactappPort: 30567
+  type:
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mtxframework
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: mtxframework
+  replicas: 1
+  minReadySeconds: 15
+  template:
+    metadata:
+      labels:
+        app: mtxframework
+    spec:
+      containers:
+        - name: mtxframework
+          image: msslabsbentonville/mtxframework:928
+          imagePullPolicy: Always
+
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - name: routes
+              mountPath: /usr/mints/global_eai
+            - name: routes
+              mountPath: /usr/src/app/resources
+      volumes:
+        - name: routes
+          persistentVolumeClaim:
+            claimName: data-camelapp

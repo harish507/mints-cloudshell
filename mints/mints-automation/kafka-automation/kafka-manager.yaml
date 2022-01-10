@@ -1,0 +1,40 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Creating zookeeper deployment
+      k8s:
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: kafka-manager
+            namespace: default
+          spec:
+            selector:
+              matchLabels:
+                app: kafka-manager
+            replicas: 1
+            selector:
+              matchLabels:
+                app: kafka-manager
+            template:
+              metadata:
+                labels:
+                  app: kafka-manager
+              spec:
+                containers:
+                - name: kafka-manager
+                  image: vishant07/kafka-manager:v1
+                  ports:
+                  - containerPort: 80
+                  env:
+                  - name: ZK_HOSTS
+                    value: zoo1:2181
+                  command:
+                  - ./bin/kafka-manager
+                  - -Dhttp.port=80
+      register: main
+    - debug:
+        var: main

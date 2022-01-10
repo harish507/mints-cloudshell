@@ -1,0 +1,46 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mtx-ui-service
+  namespace: default
+spec:
+  selector:
+    app: mtx-ui-service
+  ports:
+    - protocol: TCP
+      #Port accessible inside cluster
+      port: 4000
+      # Port to forward to inside the pod
+      targetPort: 4000
+      #Port accessible outside cluster
+      #reactappPort: 30567
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mtx-ui-service
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: mtx-ui-service
+  replicas: 1
+  minReadySeconds: 15
+  template:
+    metadata:
+      labels:
+        app: mtx-ui-service
+    spec:
+      containers:
+        - name: mtx-ui-service
+          image: msslabsbentonville/mtxui:929
+          imagePullPolicy: Always
+          #resources:
+          #requests:
+          #memory: "400Mi"
+          #cpu: "500m"
+          ports:
+            - containerPort: 4000
+              protocol: TCP

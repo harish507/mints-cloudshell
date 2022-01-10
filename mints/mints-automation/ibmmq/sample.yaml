@@ -1,0 +1,115 @@
+---
+- hosts: localhost
+  vars:
+       location: Central US
+       resource_group: MC_elk_mints_centralus
+       subscriptionsID: d1009f10-39c6-4fd9-996d-ed3ad745b15e
+  connection: local
+  tasks:
+    - name: Create managed disk
+      command: az disk create --resource-group "{{ resource_group }}" --name "{{ ansible_net_hostname }}" --size-gb 5
+     # azure_rm_manageddisk:
+     #   name: "{{ ansible_net_hostname }}"
+     #   location: "{{ location }}"
+     #   resource_group: "{{ resource_group }}"
+     #   disk_size_gb: 5
+     #   storage_account_type: Premium_LRS
+    - name: sleep for 40 seconds and continue with play
+      wait_for:
+        timeout: 40
+      delegate_to: localhost
+    - name: Create persistent volume
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: PersistentVolume
+          metadata:
+           name: "{{ ansible_net_hostname }}"
+          spec:
+           accessModes:
+           - ReadWriteOnce
+           - ReadOnlyMany
+           azureDisk:
+            cachingMode: ReadOnly
+            diskName: "{{ ansible_net_hostname }}" 
+            diskURI: "/subscriptions/{{ subscriptionsID }}/resourceGroups/{{ resource_group }}/providers/Microsoft.Compute/disks/{{ ansible_net_hostname }}"
+            fsType: ""
+            kind: Managed
+            readOnly: false
+           capacity:
+            storage: 4Gi
+           persistentVolumeReclaimPolicy: Retain
+           storageClassName: default
+    - name: Create Persistent volume claim
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: PersistentVolumeClaim
+          metadata:
+           labels:
+            app: ibm-mq
+            chart: ibm-mqadvanced-server-dev
+            heritage: Tiller
+            release: "{{ ansible_net_hostname }}"
+           name: "data-{{ ansible_net_hostname }}-ibm-mq-0"
+           namespace: default
+          spec:
+           accessModes:
+           - ReadWriteOnce
+           resources:
+            requests:
+             storage: 4Gi
+           storageClassName: default
+           volumeName: "{{ ansible_net_hostname }}"
+    - name: Creating Pod Security Policy
+      k8s:
+        state: present
+        definition:
+          apiVersion: policy/v1beta1
+          kind: PodSecurityPolicy
+          metadata:
+            name: ibm-mq-psp
+          spec:
+            allowPrivilegeEscalation: true
+            fsGroup:
+              rule: RunAsAny
+            requiredDropCapabilities:
+            - MKNOD
+            allowedCapabilities:
+            - SETPCAP
+            - AUDIT_WRITE
+            - CHOWN
+            - NET_RAW
+            - DAC_OVERRIDE
+            - FOWNER
+            - FSETID
+            - KILL
+            - SETUID
+            - SETGID
+            - NET_BIND_SERVICE
+            - SYS_CHROOT
+            - SETFCAP
+            runAsUser:
+              rule: RunAsAny
+            seLinux:
+              rule: RunAsAny
+            supplementalGroups:
+              rule: RunAsAny
+            volumes:
+            - secret
+            - persistentVolumeClaim
+            forbiddenSysctls:
+            - '*'
+    - name: Creating a secret file
+      command: kubectl create -f secret.yaml
+      tags:
+      - skip
+    - name: Adding helm repo
+      command: helm repo add ibm-charts https://raw.githubusercontent.com/IBM/charts/master/repo/stable
+    - name: Installing IBM Helm chart
+      command: helm install "{{ ansible_net_hostname }}" ibm-charts/ibm-mqadvanced-server-dev --version 4.0.0 --set license=accept,service.type=LoadBalancer --set queueManager.dev.secret.name=mq-secret --set queueManager.dev.secret.adminPasswordKey=adminPassword --set security.initVolumeAsRoot=true
+      register: ibmmq
+    - debug:
+        var: ibmmq

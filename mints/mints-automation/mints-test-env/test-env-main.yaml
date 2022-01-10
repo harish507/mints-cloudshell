@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Creating a mints-env-api service
+      command: ansible-playbook test-env-api.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: Creating a mints-env-ui service
+      command: ansible-playbook test-env-ui.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+      register: main
+    - debug:
+        var: main

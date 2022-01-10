@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  annotations:
+    pv.kubernetes.io/provisioned-by: kubernetes.io/azure-file
+  name: route
+spec:
+  accessModes:
+  - ReadWriteMany
+  - ReadWriteOnce
+  azureFile:
+    secretName: azure-secret
+    secretNamespace: default
+    shareName: routes
+  capacity:
+    storage: 10Gi
+  mountOptions:
+  - dir_mode=0777
+  - file_mode=0777
+  - uid=1000
+  - gid=1000
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: azurefile
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-camelapp
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: azurefile
+  resources:
+    requests:
+      storage: 1Gi
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: camelapp
+  namespace: default
+spec:
+  selector:
+    app: camelapp
+  ports:
+    - protocol: TCP
+      #Port accessible inside cluster
+      port: 8080
+      # Port to forward to inside the pod
+      targetPort: 8080
+      #Port accessible outside cluster
+      #reactappPort: 30567
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: camelapp
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: camelapp  
+  replicas: 1
+  minReadySeconds: 15
+  template:
+    metadata:
+      labels:
+        app: camelapp
+    spec:
+      containers:
+        - name: camelapp
+          image: msslabsbentonville/camelapps:940
+          imagePullPolicy: Always
+          #resources:
+            #requests:
+              #memory: "400Mi"
+              #cpu: "500m"         
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - name: routes
+              mountPath: /routes
+            - name: routes
+              mountPath: /usr/mints/global_eai
+            - name: routes
+              mountPath: /usr/src/app/resources
+      volumes:
+        - name: routes
+          persistentVolumeClaim:
+            claimName: data-camelapp

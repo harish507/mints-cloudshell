@@ -1,0 +1,66 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Creating mints-publish-api-service
+      k8s:
+        state: present
+        definition:
+          kind: Service
+          apiVersion: v1
+          metadata:
+            name: mints-publish-api-service
+            namespace: default
+          spec:
+            selector:
+              app: mints-publish-api-service
+            ports:
+              - protocol: TCP
+      #Port accessible inside cluster
+                port: 8004
+      # Port to forward to inside the pod
+                targetPort: 8004
+      #Port accessible outside cluster
+      #reactappPort: 30567
+            type: 
+    - name: Creating mints-publish-api-deployment
+      k8s:
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: mints-publish-api-service
+            namespace: default
+          spec:
+            selector:
+              matchLabels:
+                app: mints-publish-api-service
+            replicas: 1
+            minReadySeconds: 15
+            template:
+              metadata:
+                labels:
+                  app: mints-publish-api-service
+              spec:
+                containers:
+                  - name: mints-publish-api-service
+                    image: msslabsbentonville/mintpublishapi:924
+                    imagePullPolicy: Always
+          #resources:
+            #requests:
+              #memory: "400Mi"
+              #cpu: "500m"         
+                    ports:
+                      - containerPort: 8004
+                        protocol: TCP
+                    volumeMounts:
+                      - name: routes
+                        mountPath: /usr/src/app/routes
+                volumes:
+                  - name: routes
+                    persistentVolumeClaim:
+                      claimName: data-camelapp
+      register: mints
+    - debug:
+        var: mints      

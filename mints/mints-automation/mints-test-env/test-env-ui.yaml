@@ -1,0 +1,59 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Creating mints-env-api-service
+      k8s:
+        state: present
+        definition:
+          kind: Service
+          apiVersion: v1
+          metadata:
+            name: test-env-ui-service
+            namespace: default
+          spec:
+            selector:
+              app: test-env-ui-service
+            ports:
+              - protocol: TCP
+                #Port accessible inside cluster
+                port: 5000
+                # Port to forward to inside the pod
+                targetPort: 5000
+                #Port accessible outside cluster
+                #reactappPort: 30567
+            type: LoadBalancer
+    - name:
+      k8s:
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: test-env-ui-service
+            namespace: default
+          spec:
+            selector:
+              matchLabels:
+                app: test-env-ui-service
+            replicas: 1
+            minReadySeconds: 15
+            template:
+              metadata:
+                labels:
+                  app: test-env-ui-service
+              spec:
+                containers:
+                  - name: test-env-ui-service
+                    image: msslabsbentonville/test-env-ui:1098
+                    imagePullPolicy: Always
+                    #resources:
+                    #requests:
+                    #memory: "400Mi"
+                    #cpu: "500m"
+                    ports:
+                      - containerPort: 5000
+                        protocol: TCP
+      register: mints
+    - debug:
+        var: mints

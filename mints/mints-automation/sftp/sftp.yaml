@@ -1,0 +1,70 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: sftp
+  namespace: default
+  labels:
+    environment: test
+spec:
+  ports:
+  - name: "ssh"
+    port: 22
+    targetPort: 22
+  selector:
+    app: sftp
+
+---
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: sftp
+  namespace: default
+  labels:
+    environment: test
+    app: sftp
+spec:
+  # how many pods and indicate which strategy we want for rolling update
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sftp
+  minReadySeconds: 10
+
+  template:
+
+    metadata:
+      labels:
+        environment: test
+        app: sftp
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/sftp: runtime/default
+
+    spec:
+      #secrets and config
+      volumes:
+      - name: route
+        persistentVolumeClaim:
+          claimName: data-camelapp
+      
+      containers:
+        #the sftp server itself
+        - name: sftp
+          image: atmoz/sftp:latest
+          imagePullPolicy: Always
+          env:
+          - name: PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: sftp-server-sec
+                key: password
+          args: ["admin:$(PASSWORD):1001:100:incoming,outgoing"] #create users and dirs
+          ports:
+            - containerPort: 22
+          volumeMounts:
+            - name: route
+              mountPath: /home/admin/ftproot
+          securityContext:
+            capabilities:
+              add: ["SYS_ADMIN"]
+          resources: {}

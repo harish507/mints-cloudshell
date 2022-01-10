@@ -1,0 +1,60 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Creating mints-ui-api-service
+      k8s:
+        state: present
+        definition:
+          kind: Service
+          apiVersion: v1
+          metadata:
+            name: mints-ui-service
+            namespace: default
+          spec:
+            selector:
+              app: mints-ui-service
+            ports:
+              - protocol: TCP
+      #Port accessible inside cluster
+                port: 3000
+      # Port to forward to inside the pod
+                targetPort: 3000
+      #Port accessible outside cluster
+      #reactappPort: 30567
+            type: LoadBalancer 
+    - name: Creating mints-ui-api-deployment
+      k8s:
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: mints-ui-service 
+            namespace: default
+          spec:
+            selector:
+              matchLabels:
+                app: mints-ui-service
+            replicas: 1
+            minReadySeconds: 15
+            template:
+              metadata:
+                labels:
+                  app: mints-ui-service
+              spec:
+                containers:
+                  - name: mints-ui-service 
+                    image: msslabsbentonville/mintui:935
+                    imagePullPolicy: Always      
+                    ports:
+                      - containerPort: 3000
+                        protocol: TCP
+                   # resources:
+                   #   limits:
+                   #     cpu: 100m
+                   #   requests:
+                   #     cpu: 50m
+      register: mints
+    - debug:
+        var: mints  

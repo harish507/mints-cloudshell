@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: activemq-artemis
+spec:
+  selector:
+    matchLabels:
+      app: activemq-artemis
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: activemq-artemis
+    spec:
+      containers:
+      - name: activemq-artemis
+        image: "vromero/activemq-artemis"
+        imagePullPolicy: "Always"
+        ports: 
+        - name: port8161
+          containerPort: 8161
+        - name: port61616
+          containerPort: 61616
+        volumeMounts:
+        - mountPath: "/var/lib/artemis/data"
+          name: routes
+      volumes:
+        - name: routes
+          persistentVolumeClaim:
+            claimName: data-camelapp
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: activemq-artemis
+spec:
+  type: LoadBalancer
+  selector:
+    app: activemq-artemis
+  ports:
+  - name: port8161
+    port: 8161
+    targetPort: 8161
+  - name: port61616
+    port: 61616
+    targetPort: 61616

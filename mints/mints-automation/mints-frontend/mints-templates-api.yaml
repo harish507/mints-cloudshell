@@ -1,0 +1,55 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Creating mints-templates-api-service
+      k8s:
+        state: present
+        definition:
+          kind: Service
+          apiVersion: v1
+          metadata:
+            name: mints-templates-api-service
+            namespace: default
+          spec:
+            selector:
+              app: mints-templates-api-service
+            ports:
+              - protocol: TCP
+      #Port accessible inside cluster
+                port: 8002
+      # Port to forward to inside the pod
+                targetPort: 8002
+      #Port accessible outside cluster
+      #reactappPort: 30567
+            type:
+    - name: Creating mints-templates-api deployment
+      k8s:
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: mints-templates-api-service 
+            namespace: default
+          spec:
+            selector:
+              matchLabels:
+                app: mints-templates-api-service
+            replicas: 1
+            minReadySeconds: 15
+            template:
+              metadata:
+                labels:
+                  app: mints-templates-api-service
+              spec:
+                containers:
+                  - name: mints-templates-api-service 
+                    image: msslabsbentonville/minttemplatesapi:925
+                    imagePullPolicy: Always
+                    ports:
+                      - containerPort: 8002
+                        protocol: TCP
+      register: mints
+    - debug:
+        var: mints 

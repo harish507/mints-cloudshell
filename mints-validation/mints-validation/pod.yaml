@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mints-validation
+  namespace: default
+spec:
+  selector:
+    app: mints-validation
+  ports:
+    - protocol: TCP
+      #Port accessible inside cluster
+      port: 8181
+      # Port to forward to inside the pod
+      targetPort: 8181
+      #Port accessible outside cluster
+      #reactappPort: 30567
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mints-validation
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: mints-validation
+  replicas: 1
+  minReadySeconds: 15
+  template:
+    metadata:
+      labels:
+        app: mints-validation
+    spec:
+      containers:
+        - name: mints-validation
+          image: msslabsbentonville/mints-validations:1274
+          imagePullPolicy: Always
+
+          ports:
+            - containerPort: 8181
+              protocol: TCP
+          volumeMounts:
+            - name: routes
+              mountPath: /usr/src/app/resources
+      volumes:
+        - name: routes
+          persistentVolumeClaim:
+            claimName: data-camelapp

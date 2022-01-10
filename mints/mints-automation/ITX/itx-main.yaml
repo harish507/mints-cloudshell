@@ -1,0 +1,19 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Creating storage account fileshare
+      command: ./storage.sh
+    - name: Creating persistent volume
+      command: ansible-playbook pv.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: sleep for 20 seconds and continue with play
+      wait_for:
+        timeout: 20
+      delegate_to: localhost
+    - name: Creating pvc
+      command: ansible-playbook pvc.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: Creating ITX service and deployment
+      command: ansible-playbook itx.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+      register: main
+    - debug:
+        var: main

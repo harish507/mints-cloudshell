@@ -1,0 +1,59 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Creating mints-integration-api-service
+      k8s:
+        state: present
+        definition:
+          kind: Service
+          apiVersion: v1
+          metadata:
+            name: mints-integrations-api-service
+            namespace: default
+          spec:
+            selector:
+              app: mints-integrations-api-service
+            ports:
+              - protocol: TCP
+      #Port accessible inside cluster
+                port: 8001
+      # Port to forward to inside the pod
+                targetPort: 8001
+      #Port accessible outside cluster
+      #reactappPort: 30567
+            type: 
+    - name: Creating mints-integration-api-deployment
+      k8s:
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: mints-integrations-api-service 
+            namespace: default
+          spec:
+            selector:
+              matchLabels:
+                app: mints-integrations-api-service
+            replicas: 1
+            minReadySeconds: 15
+            template:
+              metadata:
+                labels:
+                  app: mints-integrations-api-service
+              spec:
+                containers:
+                  - name: mints-integrations-api-service 
+                    image: msslabsbentonville/mintintegrationsapi:923
+                    imagePullPolicy: Always
+          #resources:
+            #requests:
+              #memory: "400Mi"
+              #cpu: "500m"         
+                    ports:
+                      - containerPort: 8001
+                        protocol: TCP
+      register: main
+    - debug:
+        var: main

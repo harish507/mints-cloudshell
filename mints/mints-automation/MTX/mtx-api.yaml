@@ -1,0 +1,54 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mtx-api-service
+  namespace: default
+spec:
+  selector:
+    app: mtx-api-service
+  ports:
+    - protocol: TCP
+      #Port accessible inside cluster
+      port: 4001
+      # Port to forward to inside the pod
+      targetPort: 4001
+      #Port accessible outside cluster
+      #reactappPort: 30567
+  type:
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mtx-api-service
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: mtx-api-service
+  replicas: 1
+  minReadySeconds: 15
+  template:
+    metadata:
+      labels:
+        app: mtx-api-service
+    spec:
+      containers:
+        - name: mtx-api-service
+          image: msslabsbentonville/mtxapi:927
+          imagePullPolicy: Always
+          #resources:
+          #requests:
+          #memory: "400Mi"
+          #cpu: "500m"
+          ports:
+            - containerPort: 4001
+              protocol: TCP
+          volumeMounts:
+            - name: routes
+              mountPath: /usr/src/app/resources
+      volumes:
+        - name: routes
+          persistentVolumeClaim:
+            claimName: data-camelapp
+

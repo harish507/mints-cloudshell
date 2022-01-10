@@ -1,0 +1,55 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Creating mints-gateway-api-service
+      k8s:
+        state: present
+        definition:
+          kind: Service
+          apiVersion: v1
+          metadata:
+            name: mints-gateway-api-service
+            namespace: default
+          spec:
+            selector:
+              app: mints-gateway-api-service
+            ports:
+              - protocol: TCP
+      #Port accessible inside cluster
+                port: 8000
+      # Port to forward to inside the pod
+                targetPort: 8000
+      #Port accessible outside cluster
+      #reactappPort: 30567
+            type: 
+    - name: Creating mints-gateway-api-deployment
+      k8s:
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: mints-gateway-api-service 
+            namespace: default
+          spec:
+            selector:
+              matchLabels:
+                app: mints-gateway-api-service
+            replicas: 1
+            minReadySeconds: 15
+            template:
+              metadata:
+                labels:
+                  app: mints-gateway-api-service
+              spec:
+                containers:
+                  - name: mints-gateway-api-service 
+                    image: msslabsbentonville/mintgatewayapi:936
+                    imagePullPolicy: Always
+                    ports:
+                      - containerPort: 8000
+                        protocol: TCP
+      register: mints
+    - debug:
+        var: mints    

@@ -1,0 +1,82 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hello-world-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/add-base-url: "true"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  tls:
+  - hosts:
+    - mints.cf
+    secretName: tls-secret
+  rules:
+  - host: mints.cf
+    http:
+      paths:
+      - path: /validations(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: mints-validation
+            port:
+              number: 8181
+      - path: /*(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: mints-validation
+            port:
+              number: 8181
+      - path: /mintsui(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: mints-ui-service
+            port:
+              number: 5000
+      - path: /*(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: mtx-ui-service
+            port:
+              number: 4000
+      - path: /ldap(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: openldap
+            port:
+              number: 1389
+      - path: /kafka(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: kafka-manager
+            port:
+              number: 9000
+      - path: /sftp(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: sftp
+            port:
+              number: 22
+      - path: /gateway(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: mints-gateway-api-service
+            port:
+              number: 8000
+      - path: /(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: aks-helloworld-one
+            port:
+              number: 80

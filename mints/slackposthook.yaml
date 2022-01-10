@@ -1,0 +1,10 @@
+spec:
+      containers:
+      - image: xxxxxxx.dkr.ecr.ap-south-1.amazonaws.com/dev-tomcatapp:v1.0
+        imagePullPolicy: IfNotPresent
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "export hostname=`hostname` && curl -X POST -H 'Authorization: Bearer xoxb-2028381082244-2037457018646-ZAfthEiFFM0nCxVcFDGBGjAh' -H 'Content-type: application/json' --data '{\"channel\":\"miracle-mints\",\"text\":\"'\"The pod has started: $hostname\"'\"}' https://slack.com/api/chat.postMessage"]
+          preStop:
+            exec:

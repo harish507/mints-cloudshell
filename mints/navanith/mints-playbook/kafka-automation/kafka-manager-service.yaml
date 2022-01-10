@@ -1,0 +1,24 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Creating kafka-manager-service
+      k8s:
+        state: present
+        definition:
+          kind: Service
+          apiVersion: v1
+          metadata:
+            name: kafka-manager
+            namespace: default
+          spec:
+            selector:
+              app: kafka-manager
+            type: LoadBalancer
+            ports:
+            - port: 9000
+              targetPort: 80
+              nodePort: 30028
+      register: main
+    - debug:
+        var: main 

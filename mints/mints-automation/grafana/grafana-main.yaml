@@ -1,0 +1,26 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Clone the grafana charts
+      command: git clone https://github.com/helm/charts.git
+    - name: sleep for 10 seconds and continue with play
+      wait_for:
+        timeout: 10
+      delegate_to: localhost
+    - name: Installing dependencies in prometheus
+      command: helm dep update ./charts/stable/prometheus/
+    - name: Installing dependencies in prometheus-operator
+      command: helm dep update ./charts/stable/prometheus-operator/
+    - name: Installing prometheus
+      command: helm install prometheus charts/stable/prometheus/. --set rbac.create=true
+    - name: sleep for 10 seconds and continue with play
+      wait_for:
+        timeout: 10
+      delegate_to: localhost
+    - name: Installing grafana
+      command: helm install grafana charts/stable/grafana/. --version 0.5.1 --set persistence.enabled=true,persistence.size=8Gi,service.type=LoadBalancer,admin.userkey=admin,admin.passwordkey=admin,server.image=grafana/grafana:6.6.0
+    #- name: kubectl get secret --namespace default grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo  --> to get the password for grafana  
+      register: main
+    - debug:
+        var: main

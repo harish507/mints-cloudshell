@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Built-By: Techno-Comp
+Build-Jdk: 15.0.1
+Implementation-Title: MINTS-validation
+Implementation-Version: 0.0.1-SNAPSHOT
+Implementation-Vendor-Id: com.miracle.mints
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-boot
+ -starter-parent/MINTS-validation
+Main-Class: com.miracle.mints.MintsIntegrationTestingApplication
+Created-By: Maven Integration for Eclipse
+

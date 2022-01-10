@@ -1,0 +1,328 @@
+kubectl get pods
+helm install cert-manager jetstack/cert-manager ``
+    --namespace cert-manager ``
+    --version v0.14.0 ``
+    --set installCRDs=true
+kubectl get pods --namespace cert-manager
+kubectl get pods
+helm repo add hashicorp https://helm.releases.hashicorp.com
+helm repo update
+helm search repo vault --versions
+helm install vault hashicorp/vault \
+  --set='ui.enabled=true' \
+  --set='ui.serviceType=LoadBalancer'
+helm install cert-manager jetstack/cert-manager ``
+    --namespace cert-manager ``
+    --version v0.14.0 ``
+    --set installCRDs=true
+helm uninstall cert-manager jetstack/cert-manager ``
+    --namespace cert-manager ``
+    --version v0.14.0 ``
+    --set installCRDs=true
+helm uninstall cert-manager jetstack/cert-manager ``
+    --namespace cert-manager
+helm uninstall cert-manager jetstack/cert-manager
+helm uninstall cert-manager jetstack/cert-manager ``
+    --namespace cert-manager ``
+    --version v0.14.0 ``
+    --set installCRDs=true
+helm install cert-manager jetstack/cert-manager ``
+    --namespace cert-manager ``
+    --version v0.14.0 ``
+    --set installCRDs=true
+kubectl get pods --namespace cert-manager
+kubectl get pods --namespace cert-manager --watch
+ls
+cd ./mints/
+ls
+cd ./mints
+ls
+vi cluster-issuer.yaml
+kubectl apply -f ./cluster-issuer.yaml
+kubectl apply -f ./cluster-issuer.yaml -n cert-manager
+kubectl get pods
+kubectl logs -f mtxframework-cb9dfd4d6-64hn6
+kubectl apply -f ./cluster-issuer.yaml -n cert-manager
+kubectl logs -f mtxframework-cb9dfd4d6-64hn6
+kubectl apply -f ./cluster-issuer.yaml -n cert-manager
+vi cluster-issuer.yaml
+kubectl apply -f ./cluster-issuer.yaml -n cert-manager
+kubectl apply -f ./cluster-issuer.yaml
+vi cluster-issuer.yaml
+kubectl apply -f ./cluster-issuer.yaml
+kubectl get cI
+kubectl get ci
+kubectl get cluster-issuer
+kubectl describe Clusterissuer letsencrypt
+kubectl get certificate
+kubectl describe Clusterissuer letsencrypt
+kubectl describe cert app-web-cert -A
+kubectl get certificate -A
+kubectl get cert -A
+ls
+kubectl get pods 
+kubectl logs -f mintstestapi-7f5d896f99-tvxwr
+kubectl get pods 
+kubectl logs -f camelapp-54f6799946-vlzzq
+kubectl get svc
+vi ./nginx-ing.yaml
+kubectl get ing
+kubectl delete ing mints-ing
+kubectl create -f ./nginx-ing.yaml
+kubectl logs -f camelapp-54f6799946-vlzzq
+kubectl logs -f mintstestapi-7f5d896f99-tvxwr
+kubectl logs -f mtxframework-cb9dfd4d6-64hn6
+kubectl get ing
+kubectl describe ing mints-ing
+kubectl logs -f mtxframework-cb9dfd4d6-64hn6
+kubectl get svc
+kubectl get pods
+kubectl logs -f mtxframework-64986447-skvkn
+kubectl get pods 
+kubectl get pods --watch
+kubectl delete pod camelapp-5bf4dbd6c9-x48xz
+kubectl delete pod camelapp-6d68689949-2g7rf
+kubectl get svc
+kubectl get pods
+kubectl get pods --watch
+kubectl describe pod camelapp-6d68689949-z5r65
+kubectl logs -f camelapp-6d68689949-z5r65
+kubectl get pods
+kubectl get pods --watch
+kubectl delete pod camelapp-6d68689949-z5r65
+kubectl get posd
+kubectl get pods
+kubectl delete pod camelapp-5bf4dbd6c9-mkztr
+kubectl get pods
+kubectl delete pod camelapp-5bf4dbd6c9-f4kx7
+kubectl delete pod camelapp-6d68689949-gsf9r
+kubectl get pods
+kubectl get pods --watch
+kubectl logs -f camelapp-5bf4dbd6c9-8ddfv
+kubectl get pods --watch
+kubectl logs -f camelapp-6d68689949-l29tv
+kubectl get pods
+kubectl delete  pod camelapp-5bf4dbd6c9-8ddfv
+kubectl get pods
+kubectl delete pod camelapp-5bf4dbd6c9-8ddfv
+kubectl get pods 
+kubectl delete pod camelapp-5bf4dbd6c9-llchq
+kubectl get pods --watch
+kubectl get svc
+kubectl get pods
+kubectl delete pod mintstestapi-7f5d896f99-tvxwr
+kubectl get pods
+ls
+cd ..
+ls
+rm -rf ./DevOps/
+ls
+mkdir Ingress
+cd ./Ingress/
+ls
+git clone https://github.com/HoussemDellai/kubernetes-ingress-tls-ssl-https.git
+kubectl apply -f app-namespace.yaml
+ls
+cd ./kubernetes-ingress-tls-ssl-https/
+kubectl apply -f app-namespace.yaml
+kubectl apply -f app1-deploy-svc.yaml 
+kubectl apply -f app2-deploy-svc.yaml
+kubectl get svc
+kubectl get svc -A
+kubectl delete namespace mfts
+kubectl get svc -A
+kubectl get services --namespace app
+kubectl apply -f app-ingress.yaml 
+kubectl get pods --namespace cert-manager
+kubectl apply --namespace app -f ssl-tls-cluster-issuer.yaml
+vi ./ssl-tls-cluster-issuer.yaml
+kubectl apply --namespace app -f ssl-tls-cluster-issuer.yaml
+vi ./ssl-tls-cluster-issuer.yaml
+kubectl apply --namespace app -f ssl-tls-cluster-issuer.yaml
+vi ./ssl-tls-cluster-issuer.yaml
+kubectl apply --namespace app -f ssl-tls-cluster-issuer.yaml
+kubectl apply --namespace app -f ssl-tls-ingress.yaml
+kubectl describe cert app-web-cert --namespace app
+kubectl get services -n app
+kubectl describe cert app-web-cert --namespace app
+kubectl describe ing kubectl get services -n app
+kubectl describe ing ssl-tls-ingress
+kubectl describe ing ssl-tls-ingress -n app
+kubectl get all -n cert-manager
+vi
+ls
+cd ./mints/
+ls
+cd ./Ingress/
+ls
+vi Ingress-mints.yaml
+kubectl create -f ./Ingress-mints.yaml
+kubectl delete -f ./Ingress-mints.yaml
+vi Ingress-mints.yaml
+kubectl delete -f ./Ingress-mints.yaml
+kubectl create -f ./Ingress-mints.yaml
+kubectl get all -n mints
+kubectl get cert -n mints
+kubectl describe cert selfsigned-cert-tls -n mints
+kubectl describe cert -n mints
+kubectl get ing
+kubectl get ing -A
+kubectl delete namespace app
+kubectl get ing -A
+kubectl delete ing mints-ing
+kubectl delete namespace mints
+kubectl get Clusterissuer
+kubectl describe Clusterissuer letsencrypt
+kubectl
+kubctl
+kubectl get pods
+kubectl get ing
+kubectl get ing -A
+ls
+cd ./mints/
+ls
+cd ./Ingress/
+ls
+vi cluster-issuer.yaml
+kubectl create -f ./cluster-issuer.yaml
+vi cluster-issuer.yaml
+kubectl create -f ./cluster-issuer.yaml
+kubectl describe Clusterissuer letsencrypt
+vi certificate.yaml
+kubectl create ./certificate.yaml
+kubectl create -f ./certificate.yaml
+kubectl describe cert mints-cert
+kubectl get csr
+kubectl get cert
+kubectl describe Clusterissuer letsencrypt
+ls
+cd ..
+ls
+cd ./mints
+ls
+vi ./nginx-ing.yaml
+kubectl create -f ./nginx-ing.yaml
+kubectl describe ing mints-ing
+vi ./nginx-ing.yaml
+kubectl apply -f ./nginx-ing.yaml
+kubectl get pods
+ls
+clear
+kubectl get pods
+clear
+ls
+cd ./mints/
+cd ./mints
+ls
+cd ..
+ls
+cd ./mints-playbook/.git/
+cd ..
+ls
+cd ..
+ls
+cd ./mints-automation/
+clear
+ls
+cd ./sftp/
+ls
+cat ./sftp.yaml
+cd ..
+ls
+cd ./mints-frontend/
+ls
+cat ./mints-main.yaml
+ls
+clear
+ls
+cat ./camelapp.yaml
+wqcla
+clear
+ls
+cd ..
+ls
+vi vault
+kubectl get ing
+kubectl delete ing mints-ing
+cd ./mints/
+cd ./mints
+ls
+rm -rf ./aks-ingress-tls.crt
+rm -rf ./aks-ingress-tls.key
+ls
+kubectl get ing
+kubectl get cert-manger
+kubectl namespaces
+kubectl get namespaces
+kubectl get all -n cert-manager
+ls
+cd ..
+ls
+cd ./Ingress/
+ls
+cd ./kubernetes-ingress-tls-ssl-https/
+ls
+kubectl apply -f app-namespace.yaml
+kubectl apply -f app1-deploy-svc.yaml 
+kubectl apply -f app2-deploy-svc.yaml
+kubectl get services --namespace app
+vi ./app-ingress.yaml
+kubectl get pods --namespace cert-manager
+ls
+vi ./ssl-tls-cluster-issuer.yaml
+kubectl create -f ./ssl-tls-cluster-issuer.yaml
+kubectl delete clusterissuer letsencrypt
+kubectl create -f ./ssl-tls-cluster-issuer.yaml
+kubectl describe clusterissuer letsencrypt
+kubectl status clusterissuer letsencrypt 
+$ kubectl get clusterissuer
+ kubectl get clusterissuer
+kubectl delete clusterissuer letsencrypt
+ kubectl get clusterissuer
+ kubectl get clusterissuer -n cert-manager
+ kubectl get clusterissuer -A
+vi ./ssl-tls-cluster-issuer.yaml
+ kubectl get clusterissuer -A
+vi ./ssl-tls-cluster-issuer.yaml
+kubectl create -f ./ssl-tls-cluster-issuer.yaml
+kubectl describe clusterissuer letsencrypt
+vi ./ssl-tls-cluster-issuer.yaml
+vi cluster-issuer.yaml
+kubectl create -f ./cluster-issuer.yaml
+kubectl describe clusterissuer letsencrypt-prod
+kubectl status clusterissuer letsencrypt-prod
+kubectl get ns
+kubectl delete -f cluster-issuer.yaml
+kubectl delete -f ./ssl-tls-cluster-issuer.yaml
+kubectl get ing
+kubectl get svc
+kubectl get svc -A
+$ helm list --namespace ingress-basic
+NAME                    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
+cert-manager            ingress-basic   1               2020-01-15 10:23:36.515514 -0600 CST    deployed        cert-manager-v0.13.0    v0.13.0    
+$ helm list --namespace ingress-basic
+NAME                    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
+cert-manager            ingress-basic   1               2020-01-15 10:23:36.515514 -0600 CST    deployed        cert-manager-v0.13.0    v0.13.0    
+nginx                   ingress-basic   1               2020-01-15 10:09:45.982693 -0600 CST    deployed        nginx-ingress-1.29.1    0.27.0
+$ helm uninstall cert-manager nginx --namespace ingress-basic
+release "cert-manager" uninstalled
+release "nginx" uninstalled
+ helm uninstall cert-manager nginx --namespace ingress-basic
+kubectl get all -A
+kubectl delete namespace app
+helm uninstall cert-manager -n cert-manager
+kubectl get pods
+kubectl get all -A
+kubectl get ing
+kubectl get ing -A
+kubectl delete namespace ingress
+kubectl get all -A
+kubectl get svc -A
+kubectl create namespace ingress-basic
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+helm install nginx-ingress ingress-nginx/ingress-nginx \
+    --namespace ingress-basic \
+    --set controller.replicaCount=2 \
+    --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux \
+    --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux \

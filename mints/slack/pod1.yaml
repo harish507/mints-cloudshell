@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kubewatch
+  namespace: default
+spec:
+  containers:
+  - image: tuna/kubewatch:v0.0.1
+    imagePullPolicy: Always
+    name: kubewatch
+    volumeMounts:
+    - name: config-volume
+      mountPath: /root
+  - image: gcr.io/skippbox/kubectl:v1.3.0
+    args:
+      - proxy
+      - "-p"
+      - "8080"
+    name: proxy
+    imagePullPolicy: Always
+  - image: xxxxxxx.dkr.ecr.ap-south-1.amazonaws.com/dev-tomcatapp:v1.0
+    imagePullPolicy: IfNotPresent
+    name : restartpolicy
+    lifecycle:
+      postStart:
+        exec:
+          command: ["/bin/sh", "-c", "export hostname=`hostname` && curl -X POST -H 'Authorization: Bearer xoxb-2028381082244-2037457018646-ZAfthEiFFM0nCxVcFDGBGjAh' -H 'Content-type: application/json' --data '{\"channel\":\"miracle-bentonville\",\"text\":\"'\"The pod has started: $hostname\"'\"}' https://slack.com/api/chat.postMessage"]
+  restartPolicy: Always
+  serviceAccount: kubewatch
+  serviceAccountName: kubewatch
+  volumes:
+  - name: config-volume
+    configMap:
+      name: kubewatch

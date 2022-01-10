@@ -1,0 +1,55 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Creating mints-format-api-service
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: mints-format-api-service
+            namespace: default
+          spec:
+            selector:
+              app: mints-format-api-service
+            ports:
+              - protocol: TCP
+      #Port accessible inside cluster
+                port: 8003
+      # Port to forward to inside the pod
+                targetPort: 8003
+      #Port accessible outside cluster
+      #reactappPort: 30567
+            type:
+    - name: Creating mints-format-api-deployment
+      k8s:
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: mints-format-api-service
+            namespace: default
+          spec:
+            selector:
+              matchLabels:
+                app: mints-format-api-service
+            replicas: 1
+            minReadySeconds: 15
+            template:
+              metadata:
+                labels:
+                  app: mints-format-api-service
+              spec:
+                containers:
+                  - name: mints-format-api-service
+                    image: msslabsbentonville/mintformatapi:937
+                    imagePullPolicy: Always
+                    ports:
+                      - containerPort: 8003
+                        protocol: TCP
+      register: mints 
+    - debug:
+        var: mints  

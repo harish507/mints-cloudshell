@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: web-ingress-auth
+  namespace: linkerd
+data:
+  auth: YWRtaW46JGFwcjEkbjdDdTZnSGwkRTQ3b2dmN0NPOE5SWWpFakJPa1dNLgoK
+---
+# apiVersion: networking.k8s.io/v1beta1 # for k8s < v1.19
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-ingress
+  namespace: linkerd
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/add-base-url: "true"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/upstream-vhost: linkerd-web.linkerd.svc.cluster.local:8084
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header Origin "";
+      proxy_hide_header l5d-remote-ip;
+      proxy_hide_header l5d-server-id;      
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: web-ingress-auth
+    nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required'
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: mints.cf
+    http:
+      paths:
+      - path: /*(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: linkerd-web
+            port:
+              number: 8084

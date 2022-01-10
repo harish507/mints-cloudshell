@@ -1,0 +1,1 @@
+kubeadm join 10.128.15.192:6443 --token 0lr6fk.lq4gld2qef0mezau     --discovery-token-ca-cert-hash sha256:7b97f07480d08dc39795a0eaca3fe7ecd4a246378ae49e3c707e37c7c41beb88 

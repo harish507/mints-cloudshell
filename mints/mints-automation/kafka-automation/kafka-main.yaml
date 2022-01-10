@@ -1,0 +1,25 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Creating zookeeper
+      command: ansible-playbook zookeeper.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: sleep for 30 seconds and continue with play
+      wait_for:
+        timeout: 30
+      delegate_to: localhost
+    - name: Creating kafka-service
+      command: ansible-playbook kafka-service.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: sleep for 30 seconds and continue with play
+      wait_for:
+        timeout: 30
+      delegate_to: localhost
+    - name: Creating kafka-broker
+      command: ansible-playbook kafka-broker.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: Creating kafka-manager
+      command: ansible-playbook kafka-manager.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: Creating kafka-manager-service
+      command: ansible-playbook kafka-manager-service.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+      register: main
+    - debug:
+        var: main

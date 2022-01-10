@@ -1,0 +1,65 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Creating mints-test-framework-service
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: mintstestapi
+            namespace: default
+          spec:
+            selector:
+              app: mintstestapi
+            ports:
+              - protocol: TCP
+                #Port accessible inside cluster
+                port: 8080
+                # Port to forward to inside the pod
+                targetPort: 8080
+                #Port accessible outside cluster
+                #reactappPort: 30567
+            type: LoadBalancer
+    - name: Creating mints-test-framework-deployment
+      k8s:
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: mintstestapi
+            namespace: default
+          spec:
+            selector:
+              matchLabels:
+                app: mintstestapi
+            replicas: 1
+            minReadySeconds: 15
+            template:
+              metadata:
+                labels:
+                  app: mintstestapi
+              spec:
+                containers:
+                  - name: mintstestapi
+                    image: msslabsbentonville/mintstestapis:534
+                    imagePullPolicy: Always
+
+                    ports:
+                      - containerPort: 8080
+                        protocol: TCP
+                    volumeMounts:
+                      - name: routes
+                        mountPath: /usr/mints/global_eai
+                      - name: routes
+                        mountPath: /usr/src/app/resources
+                volumes:
+                  - name: routes
+                    persistentVolumeClaim:
+                      claimName: data-camelapp
+      register: mints
+    - debug:
+        var: mints

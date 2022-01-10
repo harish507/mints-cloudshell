@@ -1,0 +1,21 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Deploying mtx-api
+      command: kubectl create -f mtx-api.yaml
+    - name: sleep for 30 seconds and continue with play
+      wait_for:
+        timeout: 30
+      delegate_to: localhost
+    - name: Deploying mtx-framework
+      command: kubectl create -f mtx-framework.yaml
+    - name: sleep for 30 seconds and continue with play
+      wait_for:
+        timeout: 30
+      delegate_to: localhost
+    - name: Deploying mtx-ui
+      command: kubectl create -f mtx-ui.yaml
+      register: main
+    - debug:
+        var: main

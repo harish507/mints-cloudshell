@@ -1,0 +1,54 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mints-ui
+  namespace: default
+spec:
+  selector:
+    app: mints-ui-service
+  ports:
+    - protocol: TCP
+      #Port accessible inside cluster
+      port: 3000
+      # Port to forward to inside the pod
+      targetPort: 3000
+      #Port accessible outside cluster
+      #reactappPort: 30567
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mints-ui
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: mints-ui-service
+  replicas: 1
+  minReadySeconds: 15
+  template:
+    metadata:
+      labels:
+        app: mints-ui-service
+    spec:
+      containers:
+        - name: mints-ui-service
+          image: msslabsbentonville/mintui:324
+          imagePullPolicy: Always
+          #resources:
+          #requests:
+          #memory: "400Mi"
+          #cpu: "500m"
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /
+              port: 8443
+            initialDelaySeconds: 10
+            periodSeconds: 5
+

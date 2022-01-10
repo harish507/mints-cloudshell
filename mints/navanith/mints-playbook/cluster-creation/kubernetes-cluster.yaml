@@ -1,0 +1,26 @@
+---
+- hosts: localhost
+  vars:
+       location: Central Us
+       resource_group: elk
+       resource: MC_elk_mints_centralus
+       aks_cluster: mints
+       node_count: 4
+  connection: local
+  tasks:
+    - name: Create resource group
+      command: az group create -l "{{ location }}" -n "{{ resource_group }}"
+    #  azure_rm_resourcegroup:
+    #    name: "{{ resource_group }}"
+    #    location: "{{ location }}"
+      tags:
+      - skip
+    - name: Creating aks cluster
+      command: az aks create --location "{{ location }}" --resource-group "{{ resource_group }}" --name "{{ aks_cluster }}" --node-count "{{ node_count }}" --kubernetes-version 1.19.9 --generate-ssh-keys --vm-set-type AvailabilitySet
+      tags:
+      - skip
+    - name: Entering in to cluster
+      command: az aks get-credentials --resource-group "{{ resource_group }}" --name "{{ aks_cluster }}" --overwrite-existing
+      register: rg
+    - debug:
+        var: rg

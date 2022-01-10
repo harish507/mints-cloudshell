@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: testing-stuff
+  namespace: default
+spec:
+  template:
+    metadata:
+      name: testing-stuff
+    spec:
+      serviceAccountName: internal-kubectl
+      containers:
+      - name: tester
+        image: bitnami/kubectl:1.22.3
+        command:
+         - "bin/bash"
+         - "-c"
+         - |
+           res=$(curl -s http://13.86.37.213:8181/featureTest/validateFeatureFiles | jq '. | {result}')
+           ans=`echo $res| jq -r '.result'`
+           if [[ $ans = "SUCCESS" ]]; then
+             kubectl get pods -n default;
+             echo "break"
+             kubectl rollout history deployment/camelapp;
+           else
+             echo "test cases failed"
+           fi
+           
+      restartPolicy: Never

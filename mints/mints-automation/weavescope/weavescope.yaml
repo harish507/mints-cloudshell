@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Deploying the weavescope dashboard
+      shell: kubectl apply -f "https://cloud.weave.works/k8s/scope.yaml?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+    - name: Changing service type to Load Balancer
+      shell: kubectl get svc -n weave -o yaml > svc.yaml && sed -i "s/ClusterIP/LoadBalancer/g" svc.yaml && kubectl replace -f svc.yaml
+      register: main
+    - debug:
+        var: main

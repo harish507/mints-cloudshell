@@ -1,0 +1,23 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Deploying elasticsearch
+      command: kubectl create -f elastic.yaml
+    - name: sleep for 30 seconds and continue with play
+      wait_for:
+        timeout: 30
+      delegate_to: localhost
+    - name: Deploying Kiabna
+      command: kubectl create -f kibana.yaml
+    - name: sleep for 30 seconds and continue with play
+      wait_for:
+        timeout: 30
+      delegate_to: localhost
+    - name: Configuring RBAC
+      command: kubectl create -f fluentd-rbac.yaml
+    - name: Deploying DaemonSets
+      command: kubectl create -f fluentd-daemonset.yaml
+      register: main
+    - debug:
+        var: main

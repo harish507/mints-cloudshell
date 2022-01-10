@@ -1,0 +1,35 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Creating azure persistent volume for ITX
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: PersistentVolume
+          metadata:
+            annotations:
+              pv.kubernetes.io/provisioned-by: kubernetes.io/azure-file
+            name: txrest
+            namespace: default
+          spec:
+            accessModes:
+            - ReadWriteMany
+            - ReadWriteOnce
+            azureFile:
+              secretName: azure-txrest
+              secretNamespace: default
+              shareName: txrest
+            capacity:
+              storage: 5Gi
+            mountOptions:
+            - dir_mode=0777
+            - file_mode=0777
+            - uid=1000
+            - gid=1000
+            persistentVolumeReclaimPolicy: Retain
+            storageClassName: txrest
+      register: itx
+    - debug:
+        var: itx 

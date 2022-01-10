@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: activemq-artemis
+spec:
+  selector:
+    matchLabels:
+      app: activemq-artemis
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: activemq-artemis
+    spec:
+      containers:
+      - name: activemq-artemis
+        image: "vromero/activemq-artemis"
+        imagePullPolicy: "Always"
+        ports: 
+        - name: port8161
+          containerPort: 8161
+        - name: port61616
+          containerPort: 61616
+        volumeMounts:
+        - mountPath: "/opt/apache-artemis/examples/protocols/stomp/stomp-jms/src/main/resources/activemq/server0"
+          name: routes
+      nodeSelector:
+        kubernetes.io/hostname: aks-nodepool1-41712586-5
+      tolerations:
+      - key: "app"
+        operator: "Equal"
+        value: "amq"
+        effect: "NoSchedule"
+      volumes:
+        - name: routes
+          persistentVolumeClaim:
+            claimName: data-camelapp
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: activemq-artemis
+spec:
+  type: LoadBalancer
+  selector:
+    app: activemq-artemis
+  ports:
+  - name: port8161
+    port: 8161
+    targetPort: 8161
+  - name: port61616
+    port: 61616
+    targetPort: 61616

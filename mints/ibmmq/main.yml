@@ -1,0 +1,23 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Creating 1st pod repo1
+      command: ansible-playbook sample.yml -e 'ansible_python_interpreter=/usr/bin/python3' -e ansible_net_hostname=repo1
+    - name: Creating 2nd pod repo2
+      command: ansible-playbook sample.yml -e 'ansible_python_interpreter=/usr/bin/python3' -e ansible_net_hostname=repo2 --skip-tags skip
+    - name: Creating 3rd pod mqa
+      command: ansible-playbook sample.yml -e 'ansible_python_interpreter=/usr/bin/python3' -e ansible_net_hostname=mqa --skip-tags skip
+    - name: Creating 4th pod mqb
+      command: ansible-playbook sample.yml -e 'ansible_python_interpreter=/usr/bin/python3' -e ansible_net_hostname=mqb --skip-tags skip
+    - name: Creating 5th pod mqc
+      command: ansible-playbook sample.yml -e 'ansible_python_interpreter=/usr/bin/python3' -e ansible_net_hostname=mqc --skip-tags skip
+    - name: sleep for 120 seconds and continue with play
+      wait_for:
+        timeout: 120
+      delegate_to: localhost
+    - name: Running querries inside the pod for repo1 repo2 mqa mqb mqc to setup uniform cluster
+      command: ./querries.sh
+      register: helm
+    - debug:
+        var: helm

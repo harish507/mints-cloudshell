@@ -1,0 +1,23 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Creating pvc
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: PersistentVolumeClaim
+          metadata:
+            name: txrest
+            namespace: default
+          spec:
+            accessModes:
+              - ReadWriteMany
+            storageClassName: txrest
+            resources:
+              requests:
+                storage: 1Gi
+      register: itx
+    - debug:
+        var: itx

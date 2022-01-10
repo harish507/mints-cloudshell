@@ -1,0 +1,50 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Creating azure storageaccount fileshare azure-secret
+      shell: ./repo.sh
+    - name: Creating camelapp
+      command: kubectl create -f camelapp.yaml
+    - name: sleep for 60 seconds and continue with play
+      wait_for:
+        timeout: 60
+      delegate_to: localhost
+    - name: Creating mints-format-api 
+      command: ansible-playbook mints-format-api.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: sleep for 10 seconds and continue with play
+      wait_for:
+        timeout: 10
+      delegate_to: localhost
+    - name: Creating mints-gateway-api
+      command: ansible-playbook mints-gateway-api.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: sleep for 10 seconds and continue with play
+      wait_for:
+        timeout: 10
+      delegate_to: localhost 
+    - name: Creating mints-integrations-api
+      command: ansible-playbook mints-integrations-api.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: sleep for 10 seconds and continue with play
+      wait_for:
+        timeout: 10
+      delegate_to: localhost
+    - name: Creating mints-templates-api
+      command: ansible-playbook mints-templates-api.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: sleep for 10 seconds and continue with play
+      wait_for:
+        timeout: 10
+      delegate_to: localhost
+    - name: Creating mints-publish-api
+      command: ansible-playbook mints-publish-api.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: sleep for 10 seconds and continue with play
+      wait_for:
+        timeout: 10
+      delegate_to: localhost
+    - name: Creating mints-ui
+      command: ansible-playbook mints-ui.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: sleep for 30 seconds and continue with play
+      wait_for:
+        timeout: 30
+      register: mints
+    - debug:
+        var: mints

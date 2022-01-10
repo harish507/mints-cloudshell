@@ -1,0 +1,58 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Creating tx-rest service
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: txrest-deployment1
+            namespace: default
+            labels:
+              app: tx-rest1
+          spec:
+            type:
+            ports:
+              - name: http-8080
+                port: 8080
+            selector:
+              app: tx-rest1
+    - name: Creating tx-rest deployment
+      k8s:
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: txrest-deployment1
+            namespace: default
+          spec:
+            selector:
+              matchLabels:
+                app: tx-rest1
+            replicas: 1
+            template:
+              metadata:
+                labels:
+                  app: tx-rest1
+              spec:
+                containers:
+                - name: tx-rest1
+                  image: msslabsbentonville/itx9:unfenced-updated
+                  imagePullPolicy: IfNotPresent
+                  ports:
+                  - name: port8080
+                    containerPort: 8080
+                  volumeMounts:
+                  - mountPath: "/opt/ITX/rest"
+                    name: routes
+                volumes:
+                  - name: routes
+                    persistentVolumeClaim:
+                      claimName: data-camelapp 
+      register: itx
+    - debug:
+        var: itx

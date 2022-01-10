@@ -1,0 +1,55 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Creating a kubernetes cluster and entering in to it
+      command: ansible-playbook ./cluster-creation/kubernetes-cluster.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: Creating kafka deployment
+      command: ansible-playbook ./kafka-automation/kafka-main.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: sleep for 30 seconds and continue with play
+      wait_for:
+        timeout: 30
+      delegate_to: localhost
+    - name: Creating mints frontend and camelapp deployments
+      command: ansible-playbook ./mints-frontend/mints-main.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: sleep for 30 seconds and continue with play
+      wait_for:
+        timeout: 30
+      delegate_to: localhost
+    - name: Creating ITX deployment
+      command: ansible-playbook ./ITX/itx.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: sleep for 30 seconds and continue with play
+      wait_for:
+        timeout: 30
+    - name: Installing helm chart for ibmmq
+      command: ansible-playbook ./ibmmq/sample.yaml -e 'ansible_python_interpreter=/usr/bin/python3' -e ansible_net_hostname=mq
+    - name: sleep for 30 seconds and continue with play
+      wait_for:
+        timeout: 30
+      delegate_to: localhost
+    - name: Installing mtx
+      command: ansible-playbook ./MTX/mtx-main.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+      wait_for:
+        timeout: 30
+      delegate_to: localhost
+    - name: Installing sftp
+      command: ansible-playbook ./sftp/sftp.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: Installing active mq
+      command: ansible-playbook ./activemq/activemq-main.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: Installing helm chart for ELK
+      command: ansible-playbook ./elk/elk-main.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: Installing helm chart for Mongodb
+      command: ansible-playbook ./mongodb/mongodb-main.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: Installing helm chart for Grafana
+      command: ansible-playbook ./grafana/grafana-main.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: Installing kubernetes dashboard UI
+      command: ansible-playbook ./kubernetes-dashboardUI/kubeui-main.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: Installing weavescope
+      command: ansible-playbook ./weavescope/weavescope.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: Installing test-env
+      command: ansible-playbook ./mints-test-env/test-env-main.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+    - name: Installing test-framework
+      command: ansible-playbook ./mints-test-framework/test-test-framework.yaml -e 'ansible_python_interpreter=/usr/bin/python3'
+      register: main
+    - debug:
+        var: main
